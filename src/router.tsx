@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/AdminLayout";
 import { getToken, LoginPage } from "@/features/auth";
+import { UsersPage } from "@/features/users/UsersPage";
+import { validateUsersSearch } from "@/features/users/search";
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -49,7 +51,8 @@ const dashboardRoute = createRoute({
 const usersRoute = createRoute({
   getParentRoute: () => authedRoute,
   path: "/users",
-  component: placeholder("Users"),
+  validateSearch: validateUsersSearch,
+  component: UsersPage,
 });
 
 const adminsRoute = createRoute({
