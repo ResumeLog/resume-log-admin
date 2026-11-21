@@ -8,6 +8,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/AdminLayout";
+import { AdminsPage } from "@/features/admins/AdminsPage";
 import { getToken, LoginPage } from "@/features/auth";
 import { UsersPage } from "@/features/users/UsersPage";
 import { validateUsersSearch } from "@/features/users/search";
@@ -39,8 +40,6 @@ const authedRoute = createRoute({
   component: AdminLayout,
 });
 
-const placeholder = (name: string) => () => <p className="p-6 text-small text-text-subtle">{name}</p>;
-
 const dashboardRoute = createRoute({
   getParentRoute: () => authedRoute,
   path: "/",
@@ -58,7 +57,7 @@ const usersRoute = createRoute({
 const adminsRoute = createRoute({
   getParentRoute: () => authedRoute,
   path: "/admins",
-  component: placeholder("Admins"),
+  component: AdminsPage,
 });
 
 const routeTree = rootRoute.addChildren([loginRoute, authedRoute.addChildren([dashboardRoute, usersRoute, adminsRoute])]);
