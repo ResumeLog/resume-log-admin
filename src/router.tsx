@@ -6,6 +6,7 @@ import {
   Outlet,
   redirect,
 } from "@tanstack/react-router";
+import { AdminLayout } from "@/components/AdminLayout";
 import { getToken, LoginPage } from "@/features/auth";
 
 export interface RouterContext {
@@ -25,23 +26,37 @@ const loginRoute = createRoute({
   component: LoginPage,
 });
 
-/** Every page but /login. Without a token, go sign in. */
+/** Every page but /login, inside the sidebar layout. Without a token, go sign in. */
 const authedRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "authed",
   beforeLoad: () => {
     if (!getToken()) throw redirect({ to: "/login", replace: true });
   },
-  component: Outlet,
+  component: AdminLayout,
 });
+
+const placeholder = (name: string) => () => <p className="p-6 text-small text-text-subtle">{name}</p>;
 
 const dashboardRoute = createRoute({
   getParentRoute: () => authedRoute,
   path: "/",
-  component: () => <p className="p-6 text-small">Signed in.</p>,
+  component: placeholder("Dashboard"),
 });
 
-const routeTree = rootRoute.addChildren([loginRoute, authedRoute.addChildren([dashboardRoute])]);
+const usersRoute = createRoute({
+  getParentRoute: () => authedRoute,
+  path: "/users",
+  component: placeholder("Users"),
+});
+
+const adminsRoute = createRoute({
+  getParentRoute: () => authedRoute,
+  path: "/admins",
+  component: placeholder("Admins"),
+});
+
+const routeTree = rootRoute.addChildren([loginRoute, authedRoute.addChildren([dashboardRoute, usersRoute, adminsRoute])]);
 
 export function createAppRouter(context: RouterContext) {
   return createRouter({ routeTree, context, defaultPreload: "intent" });
