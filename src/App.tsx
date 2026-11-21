@@ -1,12 +1,33 @@
-import { Logo } from "@/components/Logo";
-import { Button } from "@/lib/components";
+import { useState } from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "@tanstack/react-router";
+import { clearToken, getToken } from "@/features/auth";
+import { configureApi } from "@/lib/api";
+import { API_URL } from "./config";
+import { createQueryClient } from "./queryClient";
+import { createAppRouter } from "./router";
+
+function createApp() {
+  const queryClient = createQueryClient();
+  const router = createAppRouter({ queryClient });
+  configureApi({
+    baseUrl: API_URL,
+    getToken,
+    onUnauthorized: () => {
+      clearToken();
+      queryClient.clear();
+      void router.navigate({ to: "/login", replace: true });
+    },
+  });
+  return { queryClient, router };
+}
 
 function App() {
+  const [{ queryClient, router }] = useState(createApp);
   return (
-    <div className="flex h-dvh flex-col items-center justify-center gap-4">
-      <Logo />
-      <Button size="large">Admin</Button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   );
 }
 
