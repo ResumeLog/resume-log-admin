@@ -3,6 +3,7 @@ import {
   createRootRouteWithContext,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   Outlet,
   redirect,
 } from "@tanstack/react-router";
@@ -41,7 +42,8 @@ const placeholder = (name: string) => () => <p className="p-6 text-small text-te
 const dashboardRoute = createRoute({
   getParentRoute: () => authedRoute,
   path: "/",
-  component: placeholder("Dashboard"),
+  // Lazy: recharts is most of the bundle, and only this page needs it.
+  component: lazyRouteComponent(() => import("@/features/dashboard/DashboardPage"), "DashboardPage"),
 });
 
 const usersRoute = createRoute({
